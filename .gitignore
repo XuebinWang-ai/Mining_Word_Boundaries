@@ -1,0 +1,10 @@
+# ignore temp file
+
+*.log
+model
+
+bert-base-chinese/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
