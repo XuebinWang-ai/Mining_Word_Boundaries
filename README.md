@@ -1,73 +1,75 @@
-## Environment
+## Mining Word Boundaries from Speech-Text Parallel Data for Cross-domain Chinese Word Segmentation
 
-```bash
-conda activate speech_cws
+This is the repo for this paper, a novel approach for mining pauses for Cross-domain CWS. 
+This paper has been accepted in COLING 2025.
+
+### Abstract
+
+Inspired by early research on exploring naturally annotated data for Chinese Word Segmentation (CWS), and also by recent research on integration of speech and text processing, this work for the first time proposes to explicitly mine word boundaries from speech-text parallel data. 
+We employ the Montreal Forced Aligner (MFA) toolkit to perform character-level alignment on speech-text data, giving pauses as candidate word boundaries. 
+Based on detailed analysis of collected pauses, we propose an effective probability-based strategy for filtering unreliable word boundaries. 
+To more effectively utilize word boundaries as extra training data, we also propose a robust complete-then-train (CTT) strategy. 
+We conduct cross-domain CWS experiments on two target domains, i.e., ZX and AISHELL2. 
+We have annotated about 1,000 sentences as the evaluation data of AISHELL2. 
+Experiments demonstrate the effectiveness of our proposed approach. 
+
+### Installation
+
+```
+pip install -r requirements.txt
 ```
 
-## Train (baseline, BMES)
+### Preparation
 
-```bash
-bash scripts/train_crf_cws_bert_wxb.sh
+*Data*: Chinese Penn Treebank 5 (CTB5) and [AISHELL2](https://www.aishelltech.com/aishell_2).
+
+*Mining puases*: Utilize [MFA](https://mfa-models.readthedocs.io/en/latest/index.html) to mine pauses 
+from AISHELL2 and ZhuXian. 
+Place the obtained pause data in the `data/AISHELL2/` and `data/ZX/` folders, 
+the file format is like `data/AISHELL2/AISHELL2.example.pauses` and `data/ZX/ZX.example.pauses`.
+
+*Bert-Base-Chinese*: download from [hugging face](https://huggingface.co/google-bert/bert-base-chinese) 
+and place it in the `bert-base-chinese/` folder.
+
+*Evaluation data of AISHELL2*: We manually annotated the AISHELL2 dev/test datasets and 
+placed it in the `data/AISHELL2/Eval` folder. 
+
+### Training
+
 ```
-Model and log files are saved in the `exp/ctb5/` and `log/ctb5` folders, respectively.
-
-## Train (bi-label. BM, MM, ME...)
-
-```bash
 cd supar_bb/
-bash scripts/train_crf_cws_bert_wxb_bi.sh
-```
-Model and log files are saved in 
-the `exp-bitag-wxb/ctb5/` and `log/ctb5` folders, respectively.
-
-## Train(bi-label. Ctb5+zx_unlabeled data)
-```bash
-cd supar_bb/
-bash scripts/train_crf_cws_bert_train2_wxb.sh
-```
-Model and log files are saved in 
-the `exp-bitag-wxb/ctb5_zx_unlabeled_train2` and `ctb5_zx_unlabeled_train2`, respectively.
-
-## Eval (baseline, BMES)
-
-```bash
-bash scripts/eval_crf_cws_bert.sh
 ```
 
-## Predict (bi-label. BM, MM, ME...)
-用 bitag 的 baseline 跑 `data/zx/result.txt.conll` or `data/ctb5/wo_punc/zx.result.wo_punc.seg`
-这个conll文件是之前包含停顿的zx文件。
-```bash
-cd supar_bb/
-bash scripts/pred_zx.sh
+### Baseline
+Train baseline (with punctuation / without punctuation)
+```
+sh scripts/train_crf_cws_bert_baseline.sh
 ```
 
-### Filter after Prediction
-根据 baseline 的概率筛选
-`all_sent_with_boundary.txt` 是包含所有文本，但是加入了语音停顿；
-`result.txt` 是只包含有语音停顿的句子对应的文本（且有分词gold）。
-```bash
-bash scripts/marg_prob_filter.sh
-```
+### Complete-Then-Train Strategy
+Take AISHELL2 as an example.
 
-## Complete-then-train
-### train bi-tag baseline using ctb5 data w/wo punc
-The data is included punc data and no_punc data
-```bash
-cd supar_bb/
-bash scripts/train_crf_cws_bert_w_wo_punc_wxb.sh
-```
+0. Self-training method.
+    ```
+    sh scripts/AISHELL2/self-training.sh
+    ```
 
-After training, use the baseline to complete the labels of zx_unlabeled data
-```bash
-cd supar_bb/
-bash scripts/pred_zx_w_wo_wxb.sh
-```
-The predicted result is `CWS_wxb/exp-bitag-wxb/ctb_no_punc_CTT/zx-result.out.conll`,
-which need to be transfer to `.../zx-result.out.one_tag.conll`
+1. Utilize base model to predict probabilities of pauses.
+    ```
+    sh scripts/AISHELL2/base_pred_aishell2_for_prob.sh
+    ```
 
-Finally, we use ctb5+zx-result.out.one_tag.conll data to train a new model from scratch.
-```bash
-cd supar_bb/
-bash scripts/train_complete_w_wo_wxb.sh
-```
+2. Filter word boundaries according to probability.
+    ```
+    sh scripts/AISHELL2/marg_prob_filter.sh
+    ```
+
+3. Restrict decoding to filtered word boundaries.
+    ```
+    sh scripts/AISHELL2/base_pred_aishell2_for_tag.sh
+    ```
+
+4. Train on AISHELL2 and CTB5 dataset.
+    ```
+    sh scripts/AISHELL2/CTT.sh
+    ```
