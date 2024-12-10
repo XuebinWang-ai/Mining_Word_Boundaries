@@ -65,5 +65,7 @@ if __name__ == "__main__":
     # print(special_tags)
 
 """
-python remove_punc.py ../zx/zx.unlabeled.pinyin.conll wo_punc/zx_unlabeled_wo_punc.pinyin.seg
+python remove_punc.py segment/train.seg wo_punc train.seg
+python remove_punc.py segment/dev.seg wo_punc dev.seg
+python remove_punc.py segment/test.seg wo_punc test.seg
 """
