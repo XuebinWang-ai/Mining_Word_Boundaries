@@ -1,0 +1,9 @@
+beam: 100
+retry_beam: 400
+use_mp: true
+
+features:
+  type: "mfcc"
+  frame_shift: 50
+
+punctuation: 、。।，@<>”(),.:;¿?¡!\&%#*~【】，…‥「」『』〝〟″⟨⟩♪・‹›«»～′$+=-…“￥（）——|：《》？！∶┅；`︱－〖〗‘’{}[]──
