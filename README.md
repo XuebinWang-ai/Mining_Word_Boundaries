@@ -23,15 +23,15 @@ pip install -r requirements.txt
 
 *Data*: Chinese Penn Treebank 5 (CTB5) and [AISHELL2](https://www.aishelltech.com/aishell_2).
 
-*Mining puases*: Utilize [MFA](https://mfa-models.readthedocs.io/en/latest/index.html) to mine pauses 
+**Mining puases**: Utilize [MFA](https://mfa-models.readthedocs.io/en/latest/index.html) to mine pauses 
 from AISHELL2 and ZhuXian. More details in the `MFA-align/` folder.
 Place the obtained pause data in the `data/AISHELL2/` and `data/ZX/` folders, 
 the file format is like `data/AISHELL2/AISHELL2.example.pauses` and `data/ZX/ZX.example.pauses`.
 
-*Bert-Base-Chinese*: download from [hugging face](https://huggingface.co/google-bert/bert-base-chinese) 
+**Bert-Base-Chinese**: download from [hugging face](https://huggingface.co/google-bert/bert-base-chinese) 
 and place it in the `bert-base-chinese/` folder.
 
-*Evaluation data of AISHELL2*: We manually annotated the AISHELL2 dev/test datasets and 
+**Evaluation data of AISHELL2**: We manually annotated the AISHELL2 dev/test datasets and 
 placed it in the `data/AISHELL2/Eval` folder. 
 
 ### Training
