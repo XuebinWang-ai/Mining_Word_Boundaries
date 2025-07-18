@@ -1,4 +1,4 @@
-# Mining Word Boundaries from Speech-Text Parallel Data for Cross-domain Chinese Word Segmentation(COLING2025)
+## Mining Word Boundaries from Speech-Text Parallel Data for Cross-domain Chinese Word Segmentation
 
 This is the repo for this paper, a novel approach for mining pauses for Cross-domain CWS. 
 This paper has been accepted in COLING 2025.
